@@ -45,7 +45,7 @@ export default class RsyncPlugin extends Plugin {
 		new Notice('Starting sync...');
 
 		this.syncExecutor.executeSync(this.settings).catch((error: Error) => {
-			console.error('Sync failed:', error);
+			console.error('[Rsync] Sync failed:', error);
 			new Notice(`Sync error: ${error.message}`);
 		});
 	}
@@ -54,6 +54,7 @@ export default class RsyncPlugin extends Plugin {
 		this.clearSchedule();
 
 		if (this.settings.scheduleInterval > 0) {
+			console.debug(`[Rsync:Schedule] Auto-sync enabled: every ${this.settings.scheduleInterval} minutes`);
 			this.scheduleIntervalId = window.setInterval(
 				() => this.runSync(),
 				this.settings.scheduleInterval * 60 * 1000
@@ -64,6 +65,7 @@ export default class RsyncPlugin extends Plugin {
 
 	private clearSchedule(): void {
 		if (this.scheduleIntervalId !== null) {
+			console.debug('[Rsync:Schedule] Auto-sync disabled');
 			window.clearInterval(this.scheduleIntervalId);
 			this.scheduleIntervalId = null;
 		}

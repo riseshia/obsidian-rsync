@@ -24,7 +24,7 @@ export class SyncExecutor {
 		}
 
 		const command = buildRsyncCommand({settings, operation: 'pull'});
-		console.debug('[Pull]', command);
+		console.debug('[Rsync:Pull]', command);
 		await this.runCommand(command, 'pull', progressCallback);
 	}
 
@@ -33,7 +33,7 @@ export class SyncExecutor {
 		progressCallback?: ProgressCallback
 	): Promise<void> {
 		const command = buildRsyncCommand({settings, operation: 'push'});
-		console.debug('[Push]', command);
+		console.debug('[Rsync:Push]', command);
 		await this.runCommand(command, 'push', progressCallback);
 	}
 
@@ -54,12 +54,12 @@ export class SyncExecutor {
 					this.currentProcess = null;
 
 					if (error) {
-						console.error(`[${operation}] Error:`, error.message);
-						if (stderr) console.error(`[${operation}] stderr:`, stderr);
+						console.error(`[Rsync:${operation}] Error:`, error.message);
+						if (stderr) console.error(`[Rsync:${operation}] stderr:`, stderr);
 						new Notice(`Rsync ${operation} failed: ${stderr || error.message}`);
 						reject(error);
 					} else {
-						console.debug(`[${operation}] Completed`);
+						console.debug(`[Rsync:${operation}] Completed`);
 						new Notice(`Rsync ${operation} completed`);
 						progressCallback?.({percentage: 100, operation});
 						resolve();

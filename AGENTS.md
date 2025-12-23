@@ -144,6 +144,32 @@ Follow Obsidian's **Developer Policies** and **Plugin Guidelines**. In particula
 - Don't assume desktop-only behavior unless `isDesktopOnly` is `true`.
 - Avoid large in-memory structures; be mindful of memory and storage constraints.
 
+## Development workflow
+
+### TDD approach (Kent Beck style)
+
+Follow the Red-Green-Refactor cycle:
+
+1. **Red**: Write a failing test (or identify what should work)
+2. **Green**: Write minimal code to make it pass
+3. **Refactor**: Clean up while keeping tests passing
+
+### Commit guidelines
+
+Each commit must satisfy the following requirements:
+
+- `npm run build` passes (TypeScript compilation + esbuild)
+- `npm run lint` passes (ESLint checks)
+
+Commit incrementally:
+
+1. **Settings/Types first**: Define interfaces and default values
+2. **Core logic**: Implement business logic (command builders, sync logic)
+3. **UI components**: Add modals, setting tabs
+4. **Integration**: Wire everything together in main.ts
+
+Never commit half-broken code. Each commit should represent a working state of the plugin.
+
 ## Agent do/don't
 
 **Do**
@@ -151,11 +177,14 @@ Follow Obsidian's **Developer Policies** and **Plugin Guidelines**. In particula
 - Provide defaults and validation in settings.
 - Write idempotent code paths so reload/unload doesn't leak listeners or intervals.
 - Use `this.register*` helpers for everything that needs cleanup.
+- Run `npm run build && npm run lint` before each commit.
+- Make small, focused commits that each pass build and lint.
 
 **Don't**
 - Introduce network calls without an obvious user-facing reason and documentation.
 - Ship features that require cloud services without clear disclosure and explicit opt-in.
 - Store or transmit vault contents unless essential and consented.
+- Commit code that fails build or lint checks.
 
 ## Common tasks
 

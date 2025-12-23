@@ -1,8 +1,34 @@
-/*
+/* Rsync modal styles */
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.rsync-progress-container {
+	margin: 1em 0;
+}
 
-If your plugin does not need CSS, delete this file.
+.rsync-progress-section {
+	margin-bottom: 1em;
+}
 
-*/
+.rsync-progress-label {
+	margin-bottom: 0.5em;
+	font-weight: 500;
+}
+
+.rsync-progress-bar {
+	width: 100%;
+	height: 1.5em;
+}
+
+.rsync-settings-toggle {
+	margin: 1em 0;
+	cursor: pointer;
+}
+
+.rsync-settings-container {
+	margin-top: 1em;
+	padding-top: 1em;
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.rsync-settings-hidden {
+	display: none;
+}

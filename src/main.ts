@@ -1,6 +1,7 @@
 import {Plugin} from 'obsidian';
 import {DEFAULT_SETTINGS, RsyncPluginSettings, RsyncSettingTab} from "./settings";
 import {SyncExecutor} from "./sync-executor";
+import {RsyncModal} from "./modal";
 
 export default class RsyncPlugin extends Plugin {
 	settings: RsyncPluginSettings = DEFAULT_SETTINGS;
@@ -11,7 +12,7 @@ export default class RsyncPlugin extends Plugin {
 		await this.loadSettings();
 
 		this.addRibbonIcon('sync', 'Rsync', () => {
-			this.runSync();
+			new RsyncModal(this.app, this).open();
 		});
 
 		this.addSettingTab(new RsyncSettingTab(this.app, this));

@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-sample-plugin",
+	"name": "obsidian-rsync",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "Sync your vault with remote servers using rsync over SSH",
 	"main": "main.js",
 	"type": "module",
 	"scripts": {

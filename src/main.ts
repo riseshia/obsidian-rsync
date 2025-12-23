@@ -1,4 +1,4 @@
-import {Plugin} from 'obsidian';
+import {Notice, Plugin} from 'obsidian';
 import {DEFAULT_SETTINGS, RsyncPluginSettings, RsyncSettingTab} from "./settings";
 import {SyncExecutor} from "./sync-executor";
 import {RsyncModal} from "./modal";
@@ -42,8 +42,11 @@ export default class RsyncPlugin extends Plugin {
 	}
 
 	runSync(): void {
-		this.syncExecutor.executeSync(this.settings).catch(error => {
+		new Notice('Starting sync...');
+
+		this.syncExecutor.executeSync(this.settings).catch((error: Error) => {
 			console.error('Sync failed:', error);
+			new Notice(`Sync error: ${error.message}`);
 		});
 	}
 

@@ -128,6 +128,17 @@ export class RsyncSettingTab extends PluginSettingTab {
 				.onChange(async (value) => {
 					this.plugin.settings.localDirPath = value;
 					await this.plugin.saveSettings();
+				}))
+			.addButton(button => button
+				.setButtonText('Use vault path')
+				.setTooltip('Set to current vault path')
+				.onClick(async () => {
+					const adapter = this.app.vault.adapter;
+					if ('basePath' in adapter) {
+						this.plugin.settings.localDirPath = adapter.basePath as string;
+						await this.plugin.saveSettings();
+						this.display();
+					}
 				}));
 
 		new Setting(containerEl)
@@ -142,6 +153,15 @@ export class RsyncSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl).setName('Sync').setHeading();
+
+		new Setting(containerEl)
+			.setName('Manual sync')
+			.setDesc('Execute sync manually for testing')
+			.addButton(button => button
+				.setButtonText('Run sync')
+				.onClick(async () => {
+					this.plugin.runSync();
+				}));
 
 		new Setting(containerEl)
 			.setName('Pull paths')

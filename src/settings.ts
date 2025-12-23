@@ -45,7 +45,7 @@ export class RsyncSettingTab extends PluginSettingTab {
 		const {containerEl} = this;
 		containerEl.empty();
 
-		new Setting(containerEl).setName('Rsync').setHeading();
+		new Setting(containerEl).setName('Connection').setHeading();
 
 		new Setting(containerEl)
 			.setName('Rsync binary path')
@@ -141,6 +141,8 @@ export class RsyncSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
+		new Setting(containerEl).setName('Sync').setHeading();
+
 		new Setting(containerEl)
 			.setName('Pull paths')
 			.setDesc('Paths to pull from remote (comma-separated). These paths will be excluded from push.')
@@ -168,6 +170,8 @@ export class RsyncSettingTab extends PluginSettingTab {
 						.filter(p => p.length > 0);
 					await this.plugin.saveSettings();
 				}));
+
+		new Setting(containerEl).setName('Advanced').setHeading();
 
 		new Setting(containerEl)
 			.setName('Dry run')

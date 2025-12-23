@@ -5,6 +5,20 @@ export interface RsyncCommandOptions {
 	operation: 'pull' | 'push';
 }
 
+function convertWindowsPathToWSL(path: string): string {
+	// Convert Windows path (C:\Users\...) to WSL mount path (/mnt/c/Users/...)
+	const windowsPathRegex = /^([A-Za-z]):[/\\]/;
+	const match = path.match(windowsPathRegex);
+
+	if (match?.[1]) {
+		const driveLetter = match[1].toLowerCase();
+		const remainingPath = path.slice(2).replace(/\\/g, '/');
+		return `/mnt/${driveLetter}${remainingPath}`;
+	}
+
+	return path;
+}
+
 export function buildRsyncCommand(options: RsyncCommandOptions): string {
 	const {settings, operation} = options;
 	const {
@@ -25,13 +39,17 @@ export function buildRsyncCommand(options: RsyncCommandOptions): string {
 	const rsyncBinary = rsyncBinaryPath || 'rsync';
 	const parts: string[] = [rsyncBinary];
 
+	// Check if we're using WSL rsync and need to convert paths
+	const isWSLRsync = rsyncBinary.toLowerCase().includes('wsl');
+
 	// Base rsync options
 	parts.push('-avz', '--progress', '--stats', '--no-links', '--delete');
 
 	// SSH options
-	let sshCommand = `ssh -p ${sshPort}`;
+	let sshCommand = `ssh -p ${sshPort} -o StrictHostKeyChecking=accept-new`;
 	if (privateKeyPath) {
-		sshCommand += ` -i ${privateKeyPath}`;
+		const keyPath = isWSLRsync ? convertWindowsPathToWSL(privateKeyPath) : privateKeyPath;
+		sshCommand += ` -i ${keyPath}`;
 	}
 	parts.push(`-e "${sshCommand}"`);
 
@@ -63,7 +81,8 @@ export function buildRsyncCommand(options: RsyncCommandOptions): string {
 
 	// Log file
 	if (logFilePath) {
-		parts.push(`--log-file='${logFilePath}'`);
+		const logPath = isWSLRsync ? convertWindowsPathToWSL(logFilePath) : logFilePath;
+		parts.push(`--log-file='${logPath}'`);
 	}
 
 	// Source and destination
@@ -71,10 +90,13 @@ export function buildRsyncCommand(options: RsyncCommandOptions): string {
 		? `sshpass -p '${sshPassword}' ${sshUsername}@${remoteIP}:${remoteDirPath}/`
 		: `${sshUsername}@${remoteIP}:${remoteDirPath}/`;
 
+	// Convert local path if using WSL
+	const localPath = isWSLRsync ? convertWindowsPathToWSL(localDirPath) : localDirPath;
+
 	if (operation === 'pull') {
-		parts.push(remoteLocation, `${localDirPath}/`);
+		parts.push(remoteLocation, `${localPath}/`);
 	} else {
-		parts.push(`${localDirPath}/`, remoteLocation);
+		parts.push(`${localPath}/`, remoteLocation);
 	}
 
 	return parts.join(' ');

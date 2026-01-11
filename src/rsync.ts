@@ -2,7 +2,7 @@ import {RsyncPluginSettings} from "./settings";
 
 export interface RsyncCommandOptions {
 	settings: RsyncPluginSettings;
-	operation: 'pull' | 'push';
+	operation: 'pull' | 'push' | 'force-push';
 }
 
 function convertWindowsPathToWSL(path: string): string {
@@ -43,7 +43,7 @@ export function buildRsyncCommand(options: RsyncCommandOptions): string {
 	const isWSLRsync = rsyncBinary.toLowerCase().includes('wsl');
 
 	// Base rsync options
-	parts.push('-avz', '--progress', '--stats', '--no-links', '--delete');
+	parts.push('-avz', '--progress', '--stats', '--no-links', '--delete', '--no-perms', '--no-group', '--no-owner');
 
 	// SSH options
 	let sshCommand = `ssh -p ${sshPort} -o StrictHostKeyChecking=accept-new`;
@@ -62,12 +62,13 @@ export function buildRsyncCommand(options: RsyncCommandOptions): string {
 		if (pullPaths.length > 0) {
 			parts.push(`--exclude='*'`);
 		}
-	} else {
+	} else if (operation === 'push') {
 		// Push: exclude pullPaths
 		for (const path of pullPaths) {
 			parts.push(`--exclude='${path}'`);
 		}
 	}
+	// force-push: no pullPaths exclusion - overwrites everything
 
 	// User-defined exclude patterns (apply to both operations)
 	for (const pattern of excludePatterns) {

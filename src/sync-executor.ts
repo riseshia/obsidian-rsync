@@ -19,8 +19,10 @@ export class SyncExecutor {
 		settings: RsyncPluginSettings,
 		progressCallback?: ProgressCallback
 	): Promise<void> {
-		// Push only - overwrites remote with local state
-		await this.executePush(settings, progressCallback);
+		// Force push - overwrites remote with local state (no pullPaths exclusion)
+		const command = buildRsyncCommand({settings, operation: 'force-push'});
+		console.debug('[Rsync:ForcePush]', command);
+		await this.runCommand(command, 'push', progressCallback);
 	}
 
 	private async executePull(

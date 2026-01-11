@@ -15,6 +15,14 @@ export class SyncExecutor {
 		await this.executePush(settings, progressCallback);
 	}
 
+	async executeForcePush(
+		settings: RsyncPluginSettings,
+		progressCallback?: ProgressCallback
+	): Promise<void> {
+		// Push only - overwrites remote with local state
+		await this.executePush(settings, progressCallback);
+	}
+
 	private async executePull(
 		settings: RsyncPluginSettings,
 		progressCallback?: ProgressCallback

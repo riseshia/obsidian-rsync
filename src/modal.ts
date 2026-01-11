@@ -21,12 +21,16 @@ export class RsyncModal extends Modal {
 		// Progress section
 		this.createProgressSection(contentEl);
 
-		// Sync button
+		// Sync buttons
 		new Setting(contentEl)
 			.setName('')
 			.addButton(button => button
 				.setButtonText('Start sync')
 				.onClick(() => this.startSync())
+			)
+			.addButton(button => button
+				.setButtonText('Force push')
+				.onClick(() => this.startForcePush())
 			);
 
 		// Settings toggle
@@ -130,6 +134,25 @@ export class RsyncModal extends Modal {
 			}
 		).catch(error => {
 			console.error('Sync failed:', error);
+		});
+	}
+
+	private startForcePush(): void {
+		// Reset push progress bar only
+		if (this.pushProgressBar) {
+			this.pushProgressBar.value = 0;
+		}
+
+		// Execute force push with progress callback
+		this.plugin.syncExecutor.executeForcePush(
+			this.plugin.settings,
+			(progress) => {
+				if (progress.operation === 'push' && this.pushProgressBar) {
+					this.pushProgressBar.value = progress.percentage;
+				}
+			}
+		).catch(error => {
+			console.error('Force push failed:', error);
 		});
 	}
 }
